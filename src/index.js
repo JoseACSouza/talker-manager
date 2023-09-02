@@ -1,8 +1,7 @@
 const express = require('express');
 const fs = require('fs').promises;
-const path = require('path');
-
-const filePathing = path.resolve(__dirname, 'src/talker.json');
+// const path = require('path');  
+const randomToken = require('crypto').randomBytes(8).toString('hex');
 
 const readFile = async () => {
   try {
@@ -19,36 +18,38 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
 
-// não remova esse endpoint, e para o avaliador funcionar
-app.get('/', (_request, response) => {
+// não remova esse endpoint, e para o avaliador funcionar 
+  app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
-});
+  });
 
-//endpoint talker
-app.get('/talker', async (req, res) => {
+// endpoint talker 
+
+  app.get('/talker', async (req, res) => {
   try {
     const talker = await readFile();
   res.status(200).send(talker);
   } catch (err) {
-    res.status(500).send({message: err.message});
+    res.status(500).send({ message: err.message });
   }
-});
+  });
 
-//endpoint /talker/:id
+// endpoint /talker/:id
 app.get('/talker/:id', async (req, res) => {
   try {
     const talker = await readFile();
-    if(talker.find((talkerID)=> talkerID.id === +req.params.id )){
-      res.status(200).send(talker.find((talkerID)=> talkerID.id === +req.params.id ));
-    } else res.status(404).send({"message": "Pessoa palestrante não encontrada"});
+    if (talker.find((talkerID) => talkerID.id === +req.params.id)) {
+      res.status(200).send(talker.find((talkerID) => talkerID.id === +req.params.id));
+    } else res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
   } catch (err) {
-    res.status(500).send({message: err.message});
+    res.status(500).send({ message: err.message });
   }
 });
+
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+  // const { email, password } = req.body;
   res.status(200).send({
-    "token": require('crypto').randomBytes(8).toString('hex')
+    token: randomToken,
   });
 });
 
