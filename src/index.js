@@ -18,6 +18,33 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
 
+const authLogin = (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email) {
+    res.status(400).send({
+      message: 'O campo "email" é obrigatório',
+    });
+  } else if (!password) {
+    res.status(400).send({
+      message: 'O campo "password" é obrigatório',
+    });
+  } else next();
+};
+
+const authLogin2 = (req, res, next) => {
+  const { email, password } = req.body;
+  const emailValidate = !(email.includes('@') && email.includes('.com') && email.length > 5);
+  if (emailValidate) {
+    res.status(400).send({
+      message: 'O "email" deve ter o formato "email@email.com"',
+    });
+  } else if (password.length < 6) {
+    res.status(400).send({
+      message: 'O "password" deve ter pelo menos 6 caracteres',
+    });
+  } else next(); 
+};
+
 // não remova esse endpoint, e para o avaliador funcionar 
   app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
@@ -47,8 +74,7 @@ app.get('/talker/:id', async (req, res) => {
 });
 
 // endpoint post /login
-app.post('/login', (req, res) => {
-  // const { email, password } = req.body;
+app.post('/login', authLogin, authLogin2, (req, res) => {
   res.status(200).send({
     token: randomToken.randomBytes(8).toString('hex'),
   });
