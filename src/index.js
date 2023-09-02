@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs').promises;
 // const path = require('path');  
-const randomToken = require('crypto').randomBytes(8).toString('hex');
+const randomToken = require('crypto');
 
 const readFile = async () => {
   try {
@@ -23,7 +23,7 @@ const PORT = process.env.PORT || '3001';
   response.status(HTTP_OK_STATUS).send();
   });
 
-// endpoint talker 
+// endpoint get /talker 
 
   app.get('/talker', async (req, res) => {
   try {
@@ -34,7 +34,7 @@ const PORT = process.env.PORT || '3001';
   }
   });
 
-// endpoint /talker/:id
+// endpoint get /talker/:id
 app.get('/talker/:id', async (req, res) => {
   try {
     const talker = await readFile();
@@ -46,10 +46,11 @@ app.get('/talker/:id', async (req, res) => {
   }
 });
 
+// endpoint post /login
 app.post('/login', (req, res) => {
   // const { email, password } = req.body;
   res.status(200).send({
-    token: randomToken,
+    token: randomToken.randomBytes(8).toString('hex'),
   });
 });
 
