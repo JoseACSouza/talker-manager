@@ -140,6 +140,18 @@ app.put(
       } else res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
     },
 );
+app.delete(
+  '/talker/:id',
+  validateToken,
+  async (req, res) => {
+      const data = await readFile();
+      if (data.find((talkerID) => talkerID.id === +req.params.id)) {
+        const attTalker = data.every((talker) => talker.id !== +req.params.id);
+        writeFile(attTalker);
+        res.status(204).send();
+      } else res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
+    },
+);
 
 app.listen(PORT, () => {
   console.log('Online');
