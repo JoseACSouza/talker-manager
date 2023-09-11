@@ -1,8 +1,10 @@
 const express = require('express');
-const fs = require('fs').promises;
-const { validateTalkerInfo, validateTalk } = require('./middlewares/validateTalker');
-const { validateToken } = require('./middlewares/validateToken');
 const randomToken = require('crypto');
+const fs = require('fs').promises;
+const {
+  validateTalk, validateTalkerName, validateTalkerAge, validateWatchedAt, validateRate,  
+} = require('./middlewares/validateTalker');
+const { validateToken } = require('./middlewares/validateToken');
 
 const readFile = async () => {
   try {
@@ -13,10 +15,9 @@ const readFile = async () => {
   }
 };
 
-const writeFile = async ( newText ) => {
+const writeFile = async (newText) => {
   try {
-    await fs.writeFile("src/talker.json", JSON.stringify(newText));
-
+    await fs.writeFile('src/talker.json', JSON.stringify(newText));
   } catch (error) {
     console.error(`Arquivo não pôde ser escrito: ${error}`);
   }
@@ -90,10 +91,18 @@ app.post('/login', authLogin, authLogin2, (req, res) => {
   });
 });
 
-app.post('/talker', validateToken, validateTalkerInfo, validateTalk, async (req, res) => {
+app.post(
+  '/talker',
+  validateToken,
+  validateTalk,
+  validateRate,
+  validateWatchedAt,
+  validateTalkerName,
+  validateTalkerAge,
+  async (req, res) => {
   const data = await readFile();
   const maiorValor = Math.max(...data.map((item) => item.id));
-  const newBody =  {
+  const newBody = {
       name: req.body.name,
       age: req.body.age,
       id: maiorValor + 1,
@@ -101,8 +110,9 @@ app.post('/talker', validateToken, validateTalkerInfo, validateTalk, async (req,
     };
   const newData = [...data, newBody];
   writeFile(newData);
-  res.status(201).json(newBody);
-});
+  res.status(201).json(newBody); 
+},
+);
 
 app.listen(PORT, () => {
   console.log('Online');
