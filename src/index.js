@@ -114,6 +114,33 @@ app.post(
 },
 );
 
+app.put(
+  '/talker/:id',
+  validateToken,
+  validateTalk,
+  validateRate,
+  validateWatchedAt,
+  validateTalkerName,
+  validateTalkerAge,
+  async (req, res) => {
+      const data = await readFile();
+      if (data.find((talkerID) => talkerID.id === +req.params.id)) {
+        const attTalker = data.map((talker) => {
+          if (talker.id === +req.params.id) {
+            return {
+              name: req.body.name,
+              age: req.body.age,
+              id: talker.id,
+              talk: req.body.talk,
+            };
+          } return talker;
+        });
+        writeFile(attTalker);
+        res.status(200).json({ id: +req.params.id, ...req.body });
+      } else res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
+    },
+);
+
 app.listen(PORT, () => {
   console.log('Online');
 });
